@@ -2,8 +2,11 @@ import streamlit as st
 import pandas as pd
 import joblib
 import shap
+import matplotlib
+matplotlib.use('Agg')  # Fix signal error in threaded environments like Streamlit
 import matplotlib.pyplot as plt
 import numpy as np
+import io  # For text export
 
 # Load artifacts
 @st.cache_resource
@@ -68,6 +71,31 @@ st.json({k: v for k, v in student_row.items() if k not in ['risk_score', 'dropou
 risk = student_row['risk_score']
 observed = student_row['dropout']
 st.metric("Predicted Risk Score", f"{risk:.3f}", delta=f"Observed: {observed}")
+
+# Download Button: Export student info + risk as TXT (formatted text report)
+student_data = student_row.copy()
+student_data['risk_score'] = risk
+
+# Build formatted text report
+text_buffer = io.StringIO()
+text_buffer.write(f"Student Risk Report\n")
+text_buffer.write("=" * 40 + "\n\n")
+text_buffer.write(f"Student ID: {selected_id}\n\n")
+text_buffer.write("Attributes:\n")
+for key, value in student_data.items():
+    if key != 'student_id':  # Already shown above
+        text_buffer.write(f"{key.replace('_', ' ').title()}: {value}\n")
+text_buffer.write(f"\nPredicted Risk Score: {risk:.3f} (Probability of dropout)\n")
+text_buffer.write(f"Observed Dropout: {observed}\n")
+text_buffer.write("\nGenerated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")  # Add timestamp
+
+text_data = text_buffer.getvalue().encode('utf-8')
+st.download_button(
+    label="Download Student Info & Risk (TXT)",
+    data=text_data,
+    file_name=f"student_{selected_id}_info_risk.txt",
+    mime="text/plain"
+)
 
 # SHAP (Fixed: Use DataFrames for concat)
 st.subheader("Feature Impact (SHAP)")
