@@ -3,6 +3,7 @@ import os
 from langchain_core.chat_history import InMemoryChatMessageHistory
 from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
+from mem0 import MemoryClient
 import logging
 
 app = Flask(__name__)
@@ -14,10 +15,12 @@ STREAMLIT_URL = os.getenv('STREAMLIT_URL', 'http://localhost:8501')
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# Load API key (assuming GEMINI_API_KEY is in env)
+# Load API keys
 gemini_api_key = os.getenv('GEMINI_API_KEY')
-if not gemini_api_key:
-    raise ValueError("Missing GEMINI_API_KEY in environment variables")
+mem0_api_key = os.getenv('MEM0_API_KEY')
+
+if not all([gemini_api_key, mem0_api_key]):
+    raise ValueError("Missing one or more API keys: GEMINI_API_KEY, MEM0_API_KEY")
 
 # Initialize LLM
 langchain_llm = ChatGoogleGenerativeAI(
@@ -25,6 +28,9 @@ langchain_llm = ChatGoogleGenerativeAI(
     temperature=0.7,
     api_key=gemini_api_key
 )
+
+# Initialize Mem0
+mem0_client = MemoryClient(api_key=mem0_api_key)
 
 # Chat history
 student_assistant_history = InMemoryChatMessageHistory()
@@ -124,6 +130,16 @@ def student_assistant_post():
             if not answer:
                 logger.warning("Empty response from Gemini")
                 answer = "No answer found. Please ask a more specific student guidance question."
+
+            # Store the conversation in Mem0
+            mem0_client.add(
+                messages=[
+                    {"role": "user", "content": query},
+                    {"role": "assistant", "content": answer}
+                ],
+                user_id="student_assistant_user",
+                output_format="v1.1"
+            )
 
             session_history = get_session_history('student')
             session_history.add_user_message(query)
