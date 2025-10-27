@@ -68,7 +68,7 @@ mem0_client = MemoryClient(api_key=mem0_api_key)
 student_assistant_history = InMemoryChatMessageHistory()
 
 llm_deepseek = ChatGroq(
-    model="deepseek-r1-distill-llama-70b",
+    model="llama-3.3-70b-versatile",
     api_key=groq_key,
     temperature=0.6
 )
@@ -82,6 +82,261 @@ llm_gemini_risk = ChatGemini(
     api_key=gemini_api_key,
     temperature=0.6
 )
+
+def get_student_retention_best_practices(student_profile: str) -> Dict:
+    try:
+        query = f"best practices for student retention in higher education for {student_profile} India"
+        results = serper_risk.run(query=query)
+        return {
+            "best_practices": results,
+            "summary": "Summarized retention strategies from reliable sources."
+        }
+    except Exception as e:
+        logger.error(f"Error fetching retention best practices: {e}")
+        return {"error": "Failed to fetch best practices", "fallback": "General strategies: Personalized mentoring, attendance monitoring, financial aid counseling."}
+
+def sanitize_text(text: str) -> str:
+    if not isinstance(text, str):
+        return str(text)
+    text = text.replace('\u2011', '-')  
+    text = re.sub(r'[\x00-\x1F\x7F]', '', text)  
+    return text.strip()
+
+def is_valid_paragraph(text: str) -> bool:
+    if not text or len(text) < 50:
+        return False
+    if re.match(r'^[()\-,;\s]+$', text):
+        return False
+    return True
+
+def create_risk_management_workflow(risk_report: str, intervention_horizon: str, language: str, max_iterations: int = 3):
+    class RiskPlanState(TypedDict):
+        risk_report: str
+        intervention_horizon: str
+        language: str
+        retention_data: Optional[Dict]
+        data_summary: Optional[str]
+        risk_assessment: Optional[str]
+        interventions: Optional[str]
+        strategy: Optional[str]
+        history: List[str]
+        iteration: int
+        final_plan: Optional[str]
+
+    workflow = StateGraph(RiskPlanState)
+
+    data_collection_prompt = (
+        "You are an educational risk analyst. Analyze the student risk report: {risk_report}. "
+        "Use the provided search results: {search_results} on retention best practices. "
+        "If search results are unavailable or irrelevant, use your knowledge to assess risks based on attributes like CGPA, attendance, family income, etc. "
+        "Provide a concise summary (100-150 words) of key risks, contributing factors, and initial mitigation ideas for the {intervention_horizon} horizon, "
+        "tailored to Indian higher education context."
+    )
+
+    deepseek_assessment_prompt = (
+        "As a risk assessment expert for {language}, review the data summary: {data_summary}, retention data: {retention_data}, and history: {history}. "
+        "Assess the student's disengagement risks (e.g., low attendance, high past failures) and score severity (low/medium/high). "
+        "Output one paragraph on prioritized risks and early warning signs."
+    )
+
+    gemini_intervention_prompt = (
+        "As an intervention strategist for {language}, based on assessment: {assessment}, data: {data_summary}, retention: {retention_data}, history: {history}, "
+        "Propose targeted interventions (e.g., counseling, peer mentoring) for the {intervention_horizon}. "
+        "Ensure cultural relevance for Indian students. Output one paragraph with 3-5 actionable steps."
+    )
+
+    gpt_strategy_prompt = (
+        "As a comprehensive strategy planner for {language}, integrate assessment: {assessment}, interventions: {interventions}, data: {data_summary}, retention: {retention_data}, history: {history}. "
+        "Develop a holistic management plan for {intervention_horizon}, including timelines, resources, and success metrics. "
+        "Output one paragraph outlining the full strategy."
+    )
+
+    summarizer_prompt = (
+        "Summarize the entire risk management plan in {language} for the student from report: {risk_report}. "
+        "Include key risks, interventions, strategy, and monitoring tips from history: {history}. "
+        "Make it concise (200-300 words), actionable, and empathetic. Structure as: Risks | Interventions | Timeline | Expected Outcomes."
+    )
+
+    def data_collection_node(state: RiskPlanState) -> Dict:
+        # Ensure all required keys exist with defaults
+        current_state = state.copy()
+        current_state.setdefault('history', [])
+        
+        profile_summary = " ".join([line.split(":", 1)[1].strip() for line in state['risk_report'].split('\n') if ':' in line and 'Attributes' not in line])
+        retention_data = get_student_retention_best_practices(profile_summary or "general student")
+        search_results = retention_data.get('best_practices', 'No results available.')
+
+        data_summary = None
+        try:
+            prompt = data_collection_prompt.format(
+                risk_report=state['risk_report'],
+                search_results=search_results,
+                intervention_horizon=state['intervention_horizon']
+            )
+            response = llm_gemini_risk.invoke(prompt)
+            data_summary = sanitize_text(response.content)
+            if not is_valid_paragraph(data_summary):
+                data_summary = "Summary: Key risks from report include low CGPA and attendance. Initial ideas: Academic support and counseling."
+            logger.info(f"Data collection summary: {data_summary[:100]}...")
+        except Exception as e:
+            logger.error(f"Error in data collection: {e}")
+            data_summary = "Fallback summary: Analyze attributes for risks like academic performance and socio-economic factors."
+
+        current_state['retention_data'] = retention_data
+        current_state['data_summary'] = data_summary
+        current_state['history'] = current_state['history'] + [f"Data collection: {data_summary[:50]}..."]
+
+        return current_state
+
+    def deepseek_assessment_node(state: RiskPlanState) -> Dict:
+        # Ensure all required keys exist with defaults
+        current_state = state.copy()
+        current_state.setdefault('history', [])
+        current_state.setdefault('data_summary', "No data summary available.")
+        current_state.setdefault('retention_data', {"fallback": "General retention data."})
+        
+        assessment = None
+        try:
+            prompt = deepseek_assessment_prompt.format(
+                language=state['language'],
+                data_summary=current_state['data_summary'],
+                retention_data=json.dumps(current_state['retention_data']),
+                history=" | ".join(current_state['history'][-2:])
+            )
+            response = llm_deepseek.invoke(prompt)
+            assessment = sanitize_text(response.content)
+            if not is_valid_paragraph(assessment):
+                assessment = "Assessment: Medium risk due to attendance and past failures. Prioritize academic monitoring."
+            logger.info(f"Deepseek assessment: {assessment[:100]}...")
+        except Exception as e:
+            logger.error(f"Error in deepseek assessment: {e}")
+            assessment = "Fallback assessment: Risks are moderate; focus on engagement."
+
+        current_state['risk_assessment'] = assessment
+        current_state['history'] = current_state['history'] + [f"Assessment: {assessment[:50]}..."]
+
+        return current_state
+
+    def gemini_intervention_node(state: RiskPlanState) -> Dict:
+        # Ensure all required keys exist with defaults
+        current_state = state.copy()
+        current_state.setdefault('history', [])
+        current_state.setdefault('data_summary', "No data summary available.")
+        current_state.setdefault('retention_data', {"fallback": "General retention data."})
+        current_state.setdefault('risk_assessment', "No assessment available.")
+        
+        interventions = None
+        try:
+            prompt = gemini_intervention_prompt.format(
+                language=state['language'],
+                assessment=current_state['risk_assessment'],
+                data_summary=current_state['data_summary'],
+                retention_data=json.dumps(current_state['retention_data']),
+                history=" | ".join(current_state['history'][-2:]),
+                intervention_horizon=state['intervention_horizon']
+            )
+            response = llm_gemini_risk.invoke(prompt)
+            interventions = sanitize_text(response.content)
+            if not is_valid_paragraph(interventions):
+                interventions = "Interventions: 1. Weekly mentoring. 2. Study groups. 3. Financial counseling. 4. Attendance tracking."
+            logger.info(f"Gemini interventions: {interventions[:100]}...")
+        except Exception as e:
+            logger.error(f"Error in gemini intervention: {e}")
+            interventions = "Fallback interventions: Personalized academic support and peer mentoring."
+
+        current_state['interventions'] = interventions
+        current_state['history'] = current_state['history'] + [f"Interventions: {interventions[:50]}..."]
+
+        return current_state
+
+    def gpt_strategy_node(state: RiskPlanState) -> Dict:
+        # Ensure all required keys exist with defaults
+        current_state = state.copy()
+        current_state.setdefault('history', [])
+        current_state.setdefault('data_summary', "No data summary available.")
+        current_state.setdefault('retention_data', {"fallback": "General retention data."})
+        current_state.setdefault('risk_assessment', "No assessment available.")
+        current_state.setdefault('interventions', "No interventions available.")
+        
+        strategy = None
+        try:
+            prompt = gpt_strategy_prompt.format(
+                language=state['language'],
+                assessment=current_state['risk_assessment'],
+                interventions=current_state['interventions'],
+                data_summary=current_state['data_summary'],
+                retention_data=json.dumps(current_state['retention_data']),
+                history=" | ".join(current_state['history'][-2:]),
+                intervention_horizon=state['intervention_horizon']
+            )
+            response = llm_gpt.invoke(prompt)
+            strategy = sanitize_text(response.content)
+            if not is_valid_paragraph(strategy):
+                strategy = "Strategy: Implement interventions over 3 months with bi-weekly reviews and progress metrics."
+            logger.info(f"GPT strategy: {strategy[:100]}...")
+        except Exception as e:
+            logger.error(f"Error in gpt strategy: {e}")
+            strategy = "Fallback strategy: Roll out interventions with faculty oversight."
+
+        current_state['strategy'] = strategy
+        current_state['history'] = current_state['history'] + [f"Strategy: {strategy[:50]}..."]
+        current_state['iteration'] = current_state.get('iteration', 0) + 1
+
+        return current_state
+
+    def summarizer_node(state: RiskPlanState) -> Dict:
+        # Ensure all required keys exist with defaults
+        current_state = state.copy()
+        current_state.setdefault('history', [])
+        
+        final_plan = None
+        try:
+            prompt = summarizer_prompt.format(
+                language=state['language'],
+                risk_report=state['risk_report'],
+                history=" | ".join(current_state['history'])
+            )
+            response = llm_gemini_risk.invoke(prompt)
+            final_plan = sanitize_text(response.content)
+            if not is_valid_paragraph(final_plan):
+                final_plan = "Final Plan: Risks identified; interventions and strategy outlined. Monitor and adjust quarterly."
+            logger.info(f"Summarizer final plan: {final_plan[:100]}...")
+        except Exception as e:
+            logger.error(f"Error in summarizer: {e}")
+            final_plan = "Fallback final plan: Comprehensive risk management generated."
+
+        current_state['final_plan'] = final_plan
+
+        return current_state
+
+    workflow.add_node("data_collection", data_collection_node)
+    workflow.add_node("deepseek_assessment", deepseek_assessment_node)
+    workflow.add_node("gemini_intervention", gemini_intervention_node)
+    workflow.add_node("gpt_strategy", gpt_strategy_node)
+    workflow.add_node("summarizer", summarizer_node)
+
+    workflow.set_entry_point("data_collection")
+    workflow.add_edge("data_collection", "deepseek_assessment")
+    workflow.add_edge("deepseek_assessment", "gemini_intervention")
+    workflow.add_edge("gemini_intervention", "gpt_strategy")
+
+    def check_iterations(state: RiskPlanState) -> str:
+        iteration = state.get('iteration', 0)
+        logger.debug(f"Iteration count: {iteration}/{max_iterations}")
+        if iteration >= max_iterations:
+            return "summarizer"
+        else:
+            return "deepseek_assessment"  # Loop back for refinement
+
+    workflow.add_conditional_edges(
+        "gpt_strategy",
+        check_iterations,
+        {"summarizer": "summarizer", "deepseek_assessment": "deepseek_assessment"}
+    )
+    workflow.add_edge("summarizer", END)
+
+    return workflow
+
 
 def get_session_history(assistant_type: str):
     MAX_MESSAGES = 5
@@ -510,217 +765,6 @@ def scholarship_finder():
 
     return render_template('scholarship_finder.html')
 
-def get_student_retention_best_practices(student_profile: str) -> Dict:
-    try:
-        query = f"best practices for student retention in higher education for {student_profile} India"
-        results = serper_risk.run(query=query)
-        return {
-            "best_practices": results,
-            "summary": "Summarized retention strategies from reliable sources."
-        }
-    except Exception as e:
-        logger.error(f"Error fetching retention best practices: {e}")
-        return {"error": "Failed to fetch best practices", "fallback": "General strategies: Personalized mentoring, attendance monitoring, financial aid counseling."}
-
-def sanitize_text(text: str) -> str:
-    if not isinstance(text, str):
-        return text
-    text = text.replace('\u2011', '-')  
-    text = re.sub(r'[\x00-\x1F\x7F]', '', text)  
-    return text.strip()
-
-def is_valid_paragraph(text: str) -> bool:
-    if not text or len(text) < 50:
-        return False
-    if re.match(r'^[()\-,;\s]+$', text):
-        return False
-    return True
-
-def create_risk_management_workflow(risk_report: str, intervention_horizon: str, language: str, max_iterations: int = 3):
-    class RiskPlanState(TypedDict):
-        risk_report: str
-        intervention_horizon: str
-        language: str
-        retention_data: Optional[Dict]
-        risk_assessment: Optional[str]
-        history: List[str]
-        iteration: int
-        final_plan: Optional[str]
-
-    workflow = StateGraph(RiskPlanState)
-
-    data_collection_prompt = (
-        "You are an educational risk analyst. Analyze the student risk report: {risk_report}. "
-        "Use the provided search results: {search_results} on retention best practices. "
-        "If search results are unavailable or irrelevant, use your knowledge to assess risks based on attributes like CGPA, attendance, family income, etc. "
-        "Provide a concise summary (100-150 words) of key risks, contributing factors, and initial mitigation ideas for the {intervention_horizon} horizon, "
-        "tailored to Indian higher education context."
-    )
-
-    deepseek_assessment_prompt = (
-        "As a risk assessment expert for {language}, review the data summary: {data_summary}, retention data: {retention_data}, and history: {history}. "
-        "Assess the student's disengagement risks (e.g., low attendance, high past failures) and score severity (low/medium/high). "
-        "Output one paragraph on prioritized risks and early warning signs."
-    )
-
-    gemini_intervention_prompt = (
-        "As an intervention strategist for {language}, based on assessment: {assessment}, data: {data_summary}, retention: {retention_data}, history: {history}, "
-        "Propose targeted interventions (e.g., counseling, peer mentoring) for the {intervention_horizon}. "
-        "Ensure cultural relevance for Indian students. Output one paragraph with 3-5 actionable steps."
-    )
-
-    gpt_strategy_prompt = (
-        "As a comprehensive strategy planner for {language}, integrate assessment: {assessment}, interventions: {interventions}, data: {data_summary}, retention: {retention_data}, history: {history}. "
-        "Develop a holistic management plan for {intervention_horizon}, including timelines, resources, and success metrics. "
-        "Output one paragraph outlining the full strategy."
-    )
-
-    summarizer_prompt = (
-        "Summarize the entire risk management plan in {language} for the student from report: {risk_report}. "
-        "Include key risks, interventions, strategy, and monitoring tips from history: {history}. "
-        "Make it concise (200-300 words), actionable, and empathetic. Structure as: Risks | Interventions | Timeline | Expected Outcomes."
-    )
-
-    def data_collection_node(state: RiskPlanState) -> Dict:
-        profile_summary = " ".join([line.split(":")[1].strip() for line in state['risk_report'].split('\n') if ':' in line and 'Attributes' not in line])
-        retention_data = get_student_retention_best_practices(profile_summary)
-        search_results = retention_data.get('best_practices', 'No results available.')
-
-        try:
-            prompt = data_collection_prompt.format(
-                risk_report=state['risk_report'],
-                search_results=search_results,
-                intervention_horizon=state['intervention_horizon']
-            )
-            response = llm_gemini_risk.invoke(prompt)
-            data_summary = sanitize_text(response.content)
-            if not is_valid_paragraph(data_summary):
-                data_summary = f"Summary for {state['location']}: Key risks from report include low CGPA and attendance. Initial ideas: Academic support and counseling."
-            logger.info(f"Data collection summary: {data_summary[:100]}...")
-        except Exception as e:
-            logger.error(f"Error in data collection: {e}")
-            data_summary = "Fallback summary: Analyze attributes for risks like academic performance and socio-economic factors."
-
-        return {
-            "retention_data": retention_data,
-            "data_summary": data_summary,
-            "history": state['history'] + [f"Data collection: {data_summary[:50]}..."]
-        }
-
-    def deepseek_assessment_node(state: RiskPlanState) -> Dict:
-        try:
-            prompt = deepseek_assessment_prompt.format(
-                language=state['language'],
-                data_summary=state['data_summary'],
-                retention_data=json.dumps(state['retention_data']),
-                history=" | ".join(state['history'][-2:])
-            )
-            response = llm_deepseek.invoke(prompt)
-            assessment = sanitize_text(response.content)
-            if not is_valid_paragraph(assessment):
-                assessment = "Assessment: Medium risk due to attendance and past failures. Prioritize academic monitoring."
-            logger.info(f"Deepseek assessment: {assessment[:100]}...")
-        except Exception as e:
-            logger.error(f"Error in deepseek assessment: {e}")
-            assessment = "Fallback assessment: Risks are moderate; focus on engagement."
-
-        return {
-            "risk_assessment": assessment,
-            "history": state['history'] + [f"Assessment: {assessment[:50]}..."]
-        }
-
-    def gemini_intervention_node(state: RiskPlanState) -> Dict:
-        try:
-            prompt = gemini_intervention_prompt.format(
-                language=state['language'],
-                assessment=state['risk_assessment'],
-                data_summary=state['data_summary'],
-                retention_data=json.dumps(state['retention_data']),
-                history=" | ".join(state['history'][-2:])
-            )
-            response = llm_gemini_risk.invoke(prompt)
-            interventions = sanitize_text(response.content)
-            if not is_valid_paragraph(interventions):
-                interventions = "Interventions: 1. Weekly mentoring. 2. Study groups. 3. Financial counseling. 4. Attendance tracking."
-            logger.info(f"Gemini interventions: {interventions[:100]}...")
-        except Exception as e:
-            logger.error(f"Error in gemini intervention: {e}")
-            interventions = "Fallback interventions: Personalized academic support and peer mentoring."
-
-        return {
-            "interventions": interventions,
-            "history": state['history'] + [f"Interventions: {interventions[:50]}..."]
-        }
-
-    def gpt_strategy_node(state: RiskPlanState) -> Dict:
-        try:
-            prompt = gpt_strategy_prompt.format(
-                language=state['language'],
-                assessment=state['risk_assessment'],
-                interventions=state['interventions'],
-                data_summary=state['data_summary'],
-                retention_data=json.dumps(state['retention_data']),
-                history=" | ".join(state['history'][-2:])
-            )
-            response = llm_gpt.invoke(prompt)
-            strategy = sanitize_text(response.content)
-            if not is_valid_paragraph(strategy):
-                strategy = "Strategy: Implement interventions over 3 months with bi-weekly reviews and progress metrics."
-            logger.info(f"GPT strategy: {strategy[:100]}...")
-        except Exception as e:
-            logger.error(f"Error in gpt strategy: {e}")
-            strategy = "Fallback strategy: Roll out interventions with faculty oversight."
-
-        return {
-            "strategy": strategy,
-            "history": state['history'] + [f"Strategy: {strategy[:50]}..."],
-            "iteration": state['iteration'] + 1
-        }
-
-    def summarizer_node(state: RiskPlanState) -> Dict:
-        try:
-            prompt = summarizer_prompt.format(
-                language=state['language'],
-                risk_report=state['risk_report'],
-                history=" | ".join(state['history'])
-            )
-            response = llm_gemini_risk.invoke(prompt)
-            final_plan = sanitize_text(response.content)
-            if not is_valid_paragraph(final_plan):
-                final_plan = "Final Plan: Risks identified; interventions and strategy outlined. Monitor and adjust quarterly."
-            logger.info(f"Summarizer final plan: {final_plan[:100]}...")
-        except Exception as e:
-            logger.error(f"Error in summarizer: {e}")
-            final_plan = "Fallback final plan: Comprehensive risk management generated."
-
-        return {
-            "final_plan": final_plan
-        }
-
-    workflow.add_node("data_collection", data_collection_node)
-    workflow.add_node("deepseek_assessment", deepseek_assessment_node)
-    workflow.add_node("gemini_intervention", gemini_intervention_node)
-    workflow.add_node("gpt_strategy", gpt_strategy_node)
-    workflow.add_node("summarizer", summarizer_node)
-
-    workflow.set_entry_point("data_collection")
-    workflow.add_edge("data_collection", "deepseek_assessment")
-    workflow.add_edge("deepseek_assessment", "gemini_intervention")
-    workflow.add_edge("gemini_intervention", "gpt_strategy")
-
-    def check_iterations(state: RiskPlanState) -> str:
-        logger.debug(f"Iteration count: {state['iteration']}/{max_iterations}")
-        return "summarizer" if state['iteration'] >= max_iterations else "deepseek_assessment"  # Loop back for refinement
-
-    workflow.add_conditional_edges(
-        "gpt_strategy",
-        check_iterations,
-        {"summarizer": "summarizer", "deepseek_assessment": "deepseek_assessment"}
-    )
-    workflow.add_edge("summarizer", END)
-
-    return workflow
-
 
 @app.route('/risk_strategist', methods=['GET', 'POST'])
 def risk_strategist():
@@ -747,7 +791,10 @@ def risk_strategist():
                 "intervention_horizon": intervention_horizon,
                 "language": language,
                 "retention_data": None,
+                "data_summary": None,
                 "risk_assessment": None,
+                "interventions": None,
+                "strategy": None,
                 "history": [],
                 "iteration": 0,
                 "final_plan": None

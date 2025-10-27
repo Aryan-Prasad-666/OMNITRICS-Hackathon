@@ -1,0 +1,33 @@
+{
+    "metadata": {
+        "timestamp": "2025-10-27T16:54:10.631008",
+        "intervention_horizon": "5 months",
+        "language": "English",
+        "max_iterations": 3,
+        "models": {
+            "data_collection": "gemini-2.5-flash",
+            "deepseek_assessment": "deepseek-r1-distill-llama-70b",
+            "gemini_intervention": "gemini-2.5-flash",
+            "gpt_strategy": "openai/gpt-oss-120b",
+            "summarizer": "gemini-2.5-flash"
+        },
+        "tools": {
+            "search": "GoogleSerperResults"
+        }
+    },
+    "conversation": {
+        "history": [
+            "Data collection: Student 200000 exhibits a high-risk profile despit...",
+            "Assessment: Student 200000 exhibits a high-risk profile, with ...",
+            "Interventions: For Student 200000, immediate interventions over t...",
+            "Strategy: Over the next 5 months (≈20 weeks), Student 200000...",
+            "Assessment: Student 200000 exhibits a high-risk profile, with ...",
+            "Interventions: Over the next five months, immediate and targeted ...",
+            "Strategy: Over a five-month horizon (Month 1 – Month 5), the...",
+            "Assessment: Student 200000 exhibits a high-risk profile due to...",
+            "Interventions: Over the next five months, immediate and culturall...",
+            "Strategy: Over the next five months, Student 200000 will be ..."
+        ],
+        "final_plan": "Here's a summary of the risk management plan for Student 200000:**Risks:**Student 200000, an Arts student, currently faces a significant predicted risk of dropout (11%) despite not having dropped out yet. This high-risk profile is primarily driven by a low CGPA (5.5), a concerning attendance rate (64%), and a history of four past academic failures, indicating a need for urgent support.**Interventions:**Over the next five months, a comprehensive and empathetic support plan will be implemented. This includes:*   **Academic Support:** Immediate and targeted tutoring and assistance with assignments to improve understanding and academic performance.*   **Personal Development:** Regular mentorship (peer or faculty) and counseling sessions to address personal and academic challenges.*   **Integration & Well-being:** Participation in cultural integration activities and workshops to foster a sense of belonging and support.*   **Practical Assistance:** Guidance and support for applying for financial aid to alleviate potential financial stressors.*   **Regular Check-ins:** Weekly check-ins will be conducted to monitor progress and provide ongoing encouragement.**Timeline:**This intensive support plan spans five months (approximately 20 weeks), from Month 1 through Month 5, focusing on immediate and sustained intervention to address the identified risks.**Expected Outcomes:**The primary goal is to significantly reduce the student's dropout probability. We anticipate a notable improvement in academic performance (CGPA and attendance), enhanced personal well-being, and a stronger sense of integration within the university community, ultimately fostering a successful and supported academic journey."
+    }
+}

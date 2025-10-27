@@ -153,6 +153,8 @@
     .history-list {
         list-style: none;
         padding: 0;
+        max-height: 400px;
+        overflow-y: auto;
     }
 
     .history-list li {
@@ -161,6 +163,8 @@
         margin-bottom: 10px;
         border-radius: 8px;
         border-left: 4px solid var(--accent-color);
+        white-space: pre-wrap;
+        word-break: break-word;
     }
 
     .final-plan {
@@ -172,6 +176,8 @@
         font-size: 16px;
         line-height: 1.7;
         color: var(--dark-color);
+        white-space: pre-wrap;
+        word-break: break-word;
     }
 
     .error-message {
@@ -214,6 +220,10 @@
 
         .results-section {
             padding: 20px;
+        }
+
+        .history-list {
+            max-height: 300px;
         }
     }
 </style>
@@ -263,7 +273,7 @@
             <div class="final-plan">
                 {{ final_plan | safe }}
             </div>
-            <h4 data-translate="history_title">Planning History</h4>
+            <h4 data-translate="history_title">Planning History (Full Log)</h4>
             <ul class="history-list">
                 {% for entry in history %}
                 <li>{{ entry }}</li>

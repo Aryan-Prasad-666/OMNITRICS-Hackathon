@@ -1,0 +1,33 @@
+{
+    "metadata": {
+        "timestamp": "2025-10-27T16:49:43.326547",
+        "intervention_horizon": "5 months",
+        "language": "English",
+        "max_iterations": 3,
+        "models": {
+            "data_collection": "gemini-2.5-flash",
+            "deepseek_assessment": "deepseek-r1-distill-llama-70b",
+            "gemini_intervention": "gemini-2.5-flash",
+            "gpt_strategy": "openai/gpt-oss-120b",
+            "summarizer": "gemini-2.5-flash"
+        },
+        "tools": {
+            "search": "GoogleSerperResults"
+        }
+    },
+    "conversation": {
+        "history": [
+            "Data collection: This student faces significant risks, primarily dr...",
+            "Assessment: Fallback assessment: Risks are moderate; focus on ...",
+            "Interventions: For the next 5 months, a multi-pronged interventio...",
+            "Strategy: Over the next five months the student will follow ...",
+            "Assessment: Fallback assessment: Risks are moderate; focus on ...",
+            "Interventions: Over the next five months, a targeted intervention...",
+            "Strategy: Over the next five months (Weeks 1-20), the studen...",
+            "Assessment: Fallback assessment: Risks are moderate; focus on ...",
+            "Interventions: Over the next five months, a multi-faceted interve...",
+            "Strategy: Over the next five months the student will follow ..."
+        ],
+        "final_plan": "Here's a summary of the risk management plan for Student ID 200000:**Risks**Student ID 200000, a 20-year-old female Arts student, faces a moderate yet significant risk of academic struggle and potential dropout, indicated by a predicted risk score of 0.11. Key contributing factors include a low CGPA of 5.5, a concerning attendance rate of just 64.26%, and a history of four past failures. These attributes highlight substantial academic challenges that require immediate and focused attention.**Interventions**A comprehensive, multi-faceted intervention plan will be implemented over the next five months. This targeted approach is designed to address the student’s specific academic weaknesses, improve attendance, and provide essential support systems. While specific program details are not outlined, the strategy emphasizes proactive engagement to foster academic improvement and overall student well-being.**Timeline**This structured risk management plan will be actively in place for the next five months, approximately covering Weeks 1 through 20.**Expected Outcomes**The primary objective is to significantly mitigate the risk of dropout, improve academic performance (including CGPA), increase attendance rates, and enhance the student's overall engagement and success. Through these efforts, the goal is to ensure the student's continued academic progress and a more supportive university experience."
+    }
+}
