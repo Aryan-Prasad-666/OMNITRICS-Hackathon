@@ -1,0 +1,33 @@
+{
+    "metadata": {
+        "timestamp": "2025-10-27T16:42:48.655951",
+        "intervention_horizon": "5 months",
+        "language": "English",
+        "max_iterations": 3,
+        "models": {
+            "data_collection": "gemini-2.5-flash",
+            "deepseek_assessment": "deepseek-r1-distill-llama-70b",
+            "gemini_intervention": "gemini-2.5-flash",
+            "gpt_strategy": "openai/gpt-oss-120b",
+            "summarizer": "gemini-2.5-flash"
+        },
+        "tools": {
+            "search": "GoogleSerperResults"
+        }
+    },
+    "conversation": {
+        "history": [
+            "Data collection: This student presents a high-risk profile, despite...",
+            "Assessment: Fallback assessment: Risks are moderate; focus on ...",
+            "Interventions: Fallback interventions: Personalized academic supp...",
+            "Strategy: Fallback strategy: Roll out interventions with fac...",
+            "Assessment: Fallback assessment: Risks are moderate; focus on ...",
+            "Interventions: Fallback interventions: Personalized academic supp...",
+            "Strategy: Fallback strategy: Roll out interventions with fac...",
+            "Assessment: Fallback assessment: Risks are moderate; focus on ...",
+            "Interventions: Fallback interventions: Personalized academic supp...",
+            "Strategy: Fallback strategy: Roll out interventions with fac..."
+        ],
+        "final_plan": "Dear Student,This risk management plan is designed to support you in achieving your academic goals and ensuring a successful university experience. While your predicted probability of dropout is low (0.11), your academic profile presents several moderate risk factors that we aim to address proactively.**Risks:**Your current academic standing is impacted by a relatively low CGPA (5.50) and an attendance rate of 64.26%. You also have a history of 4 past failures, indicating potential challenges with course material or study habits. These factors, despite a low dropout prediction, suggest a need for focused support to prevent future academic difficulties.**Interventions:**We will implement personalized academic support tailored to your needs, rolling out these interventions with faculty and facilitators. This includes:*   **Academic Mentorship/Tutoring:** Connecting you with a mentor or tutor in the Arts department to provide targeted assistance with challenging subjects and improve your CGPA.*   **Attendance Monitoring & Support:** Proactive check-ins regarding attendance, identifying any barriers, and offering solutions or resources.*   **Study Skills Workshops:** Providing access to workshops focusing on effective study techniques, time management, and exam preparation to help overcome past failure patterns.*   **Faculty Engagement:** Facilitating direct communication and support from course instructors to ensure a collaborative approach.**Timeline:***   **Immediate (within 2 weeks):** Initial meeting with an academic advisor to discuss your specific challenges and tailor the support plan.*   **Ongoing (throughout the semester):** Regular check-ins with your mentor/tutor and academic advisor.*   **Mid-semester:** Review of progress and adjustment of interventions as needed, with continuous monitoring of academic performance and attendance.**Expected Outcomes:**Our goal is to see a noticeable improvement in your CGPA and attendance rate. By addressing these moderate risks proactively, we anticipate a reduction in academic stress, enhanced learning outcomes, and increased overall engagement with your studies, ultimately ensuring your continued success at the university."
+    }
+}

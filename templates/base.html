@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}JñānaMitra.ai - Empowering Student Success{% endblock %}</title>
-    <!-- Poppins Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -133,7 +130,6 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
             <a class="navbar-brand" href="/"><i class="fas fa-graduation-cap me-2"></i>JñānaMitra.ai</a>
@@ -149,7 +145,7 @@
                         <a class="nav-link" href="/dashboard" data-translate="nav_dashboard">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/students" data-translate="nav_students">Students</a>
+                        <a class="nav-link" href="/risk_strategist" data-translate="nav_students">Risk Strategist</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/scholarship_finder" data-translate="nav_simulation">Scholarship Finder</a>
@@ -173,10 +169,8 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     {% block content %}{% endblock %}
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="row">
@@ -188,8 +182,8 @@
                     <h5 class="footer-heading" data-translate="footer_services">Services</h5>
                     <ul class="footer-links">
                         <li><a href="/dashboard" data-translate="footer_dashboard">Dashboard</a></li>
-                        <li><a href="/students" data-translate="footer_students">Student Analytics</a></li>
-                        <li><a href="/simulation" data-translate="footer_simulation">Simulation Panel</a></li>
+                        <li><a href="/risk_strategist" data-translate="footer_students">Risk Strategist</a></li>
+                        <li><a href="/scholarship_finder" data-translate="footer_simulation">Scholarship Finder</a></li>
                         <li><a href="/student_assistant" data-translate="footer_student_assistant">Student Assistance</a></li>
                     </ul>
                 </div>
@@ -233,7 +227,6 @@
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Translations object (en, hi, kn)
@@ -241,7 +234,7 @@
             en: {
                 nav_home: "Home",
                 nav_dashboard: "Dashboard",
-                nav_students: "Students",
+                nav_students: "Risk Strategist",
                 nav_simulation: "Scholarship Finder",
                 nav_student_assistant: "Student Assistance",
                 nav_about: "About Us",
@@ -250,8 +243,8 @@
                 footer_description: "Empowering educational institutions with AI-driven analytics to prevent student disengagement and promote academic success.",
                 footer_services: "Services",
                 footer_dashboard: "Dashboard",
-                footer_students: "Student Analytics",
-                footer_simulation: "Simulation Panel",
+                footer_students: "Risk Strategist",
+                footer_simulation: "Scholarship Finder",
                 footer_student_assistant: "Student Assistant",
                 footer_company: "Company",
                 footer_about: "About Us",
@@ -270,8 +263,8 @@
             hi: {
                 nav_home: "होम",
                 nav_dashboard: "डैशबोर्ड",
-                nav_students: "छात्र",
-                nav_simulation: "सिमुलेशन",
+                nav_students: "जोखिम रणनीतिकार", // Risk Strategist
+                nav_simulation: "छात्रवृत्ति खोजक", // Scholarship Finder
                 nav_student_assistant: "छात्र सहायक",
                 nav_about: "हमारे बारे में",
                 nav_language: "भाषा",
@@ -279,8 +272,8 @@
                 footer_description: "शैक्षिक संस्थानों को छात्रों की असंगति को रोकने और शैक्षिक सफलता को बढ़ावा देने के लिए एआई-संचालित विश्लेषण के साथ सशक्त बनाना।",
                 footer_services: "सेवाएँ",
                 footer_dashboard: "डैशबोर्ड",
-                footer_students: "छात्र विश्लेषण",
-                footer_simulation: "सिमुलेशन पैनल",
+                footer_students: "जोखिम रणनीतिकार", // Risk Strategist
+                footer_simulation: "छात्रवृत्ति खोजक", // Scholarship Finder
                 footer_student_assistant: "छात्र सहायक",
                 footer_company: "कंपनी",
                 footer_about: "हमारे बारे में",
@@ -299,8 +292,8 @@
             kn: {
                 nav_home: "ಮುಖಪುಟ",
                 nav_dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
-                nav_students: "ವಿದ್ಯಾರ್ಥಿಗಳು",
-                nav_simulation: "ಸಿಮುಲೇಷನ್",
+                nav_students: "ರಿಸ್ಕ್ ಸ್ಟ್ರಾಟೆಜಿಸ್ಟ್", // Risk Strategist
+                nav_simulation: "ಸ್ಕಾಲರ್‌ಶಿಪ್ ಫೈಂಡರ್", // Scholarship Finder
                 nav_student_assistant: "ವಿದ್ಯಾರ್ಥಿ ಸಹಾಯಕ",
                 nav_about: "ನಮ್ಮ ಬಗ್ಗೆ",
                 nav_language: "ಭಾಷೆ",
@@ -308,8 +301,8 @@
                 footer_description: "ವಿದ್ಯಾರ್ಥಿಗಳ ಅಸಂಗತಿಯನ್ನು ತಡೆಗಟ್ಟಲು ಮತ್ತು ಶೈಕ್ಷಣಿಕ ಯಶಸ್ಸನ್ನು ಉತ್ತೇಜಿಸಲು ಎಐ-ಚಾಲಿತ ವಿಶ್ಲೇಷಣೆಗಳೊಂದಿಗೆ ಶೈಕ್ಷಣಿಕ ಸಂಸ್ಥೆಗಳನ್ನು ಸಬಲೀಕರಣಗೊಳಿಸುವುದು।",
                 footer_services: "ಸೇವೆಗಳು",
                 footer_dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
-                footer_students: "ವಿದ್ಯಾರ್ಥಿ ವಿಶ್ಲೇಷಣೆ",
-                footer_simulation: "ಸಿಮುಲೇಷನ್ ಪ್ಯಾನಲ್",
+                footer_students: "ರಿಸ್ಕ್ ಸ್ಟ್ರಾಟೆಜಿಸ್ಟ್", // Risk Strategist
+                footer_simulation: "ಸ್ಕಾಲರ್‌ಶಿಪ್ ಫೈಂಡರ್", // Scholarship Finder
                 footer_student_assistant: "ವಿದ್ಯಾರ್ಥಿ ಸಹಾಯಕ",
                 footer_company: "ಕಂಪನಿ",
                 footer_about: "ನಮ್ಮ ಬಗ್ಗೆ",

@@ -1,0 +1,310 @@
+<!-- templates/risk_strategist.html -->
+{% extends 'base.html' %}
+
+{% block title %}JñānaMitra.ai - Risk Strategist{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        height: 100vh;
+        background: url('https://images.pexels.com/photos/3280130/pexels-photo-3280130.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2') no-repeat center center/cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(180deg, rgba(30, 42, 68, 0.5), rgba(30, 42, 68, 0.7));
+    }
+
+    .hero-content {
+        position: relative;
+        max-width: 900px;
+        padding: 20px;
+        animation: fadeInUp 1.2s ease-out;
+    }
+
+    .hero-content h1 {
+        font-size: 58px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        color: var(--accent-color);
+        text-shadow: 0 0 10px rgba(244, 162, 97, 0.5);
+    }
+
+    .hero-content p {
+        font-size: 20px;
+        line-height: 1.6;
+        margin-bottom: 40px;
+        color: var(--light-color);
+    }
+
+    .section {
+        padding: 80px 0;
+        text-align: center;
+        background: var(--light-color);
+    }
+
+    .section h2 {
+        font-size: 38px;
+        margin-bottom: 20px;
+        color: var(--dark-color);
+        text-transform: uppercase;
+    }
+
+    .section p {
+        font-size: 18px;
+        line-height: 1.6;
+        max-width: 700px;
+        margin: 0 auto 40px;
+        color: #3c4a6b;
+    }
+
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--accent-color);
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+        text-align: left;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 8px;
+        font-size: 16px;
+    }
+
+    .form-group textarea,
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e6ed;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+        background: var(--light-color);
+    }
+
+    .form-group textarea {
+        height: 120px;
+        resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(244, 162, 97, 0.1);
+    }
+
+    .cta-button {
+        background: linear-gradient(45deg, var(--accent-color), #e38944);
+        color: var(--dark-color);
+        padding: 15px 40px;
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 700;
+        border-radius: 50px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 15px rgba(244, 162, 97, 0.4);
+        border: none;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .cta-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(244, 162, 97, 0.6);
+        color: var(--dark-color);
+    }
+
+    .results-section {
+        text-align: left;
+        background: #fff;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-top: 40px;
+        border: 1px solid var(--accent-color);
+    }
+
+    .history-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .history-list li {
+        background: var(--light-color);
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        border-left: 4px solid var(--accent-color);
+    }
+
+    .final-plan {
+        background: linear-gradient(135deg, var(--light-color), #f8f9ff);
+        padding: 25px;
+        border-radius: 12px;
+        border: 2px solid var(--accent-color);
+        margin-top: 20px;
+        font-size: 16px;
+        line-height: 1.7;
+        color: var(--dark-color);
+    }
+
+    .error-message {
+        background: #fee;
+        color: #c33;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #fcc;
+        margin-bottom: 20px;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-content h1 {
+            font-size: 40px;
+            letter-spacing: 2px;
+        }
+
+        .hero-content p {
+            font-size: 16px;
+        }
+
+        .section h2 {
+            font-size: 32px;
+        }
+
+        .form-container {
+            padding: 20px;
+        }
+
+        .results-section {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="hero-content">
+        <h1 data-translate="hero_title">Risk Strategist</h1>
+        <p data-translate="hero_description">Generate personalized risk management plans using AI-driven workflows to support student retention and success.</p>
+        <a href="#form-section" class="cta-button" data-translate="hero_cta">Start Planning</a>
+    </div>
+</div>
+
+<div class="section" id="form-section">
+    <div class="container">
+        <h2 data-translate="form_title">Create Risk Management Plan</h2>
+        <p data-translate="form_description">Input the student risk report, intervention horizon, and preferred language to generate a comprehensive strategy.</p>
+        
+        {% if error_message %}
+        <div class="error-message">{{ error_message }}</div>
+        {% endif %}
+
+        <form method="POST" class="form-container" {% if form_submitted %}style="display: none;"{% endif %}>
+            <div class="form-group">
+                <label for="risk_report">Student Risk Report (paste full report):</label>
+                <textarea id="risk_report" name="risk_report" placeholder="e.g., Student ID: 12345&#10;CGPA: 6.2&#10;Attendance: 65%&#10;Family Income: 250000&#10;..." required>{% if risk_report %}{{ risk_report }}{% endif %}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="intervention_horizon">Intervention Horizon (e.g., 3 months, semester):</label>
+                <input type="text" id="intervention_horizon" name="intervention_horizon" placeholder="e.g., Next semester" required value="{% if intervention_horizon %}{{ intervention_horizon }}{% endif %}">
+            </div>
+            <div class="form-group">
+                <label for="language">Language:</label>
+                <select id="language" name="language">
+                    <option value="English" {% if language == 'English' %}selected{% endif %}>English</option>
+                    <option value="Hindi" {% if language == 'Hindi' %}selected{% endif %}>Hindi</option>
+                    <option value="Kannada" {% if language == 'Kannada' %}selected{% endif %}>Kannada</option>
+                </select>
+            </div>
+            <button type="submit" class="cta-button">Generate Plan</button>
+        </form>
+
+        {% if form_submitted %}
+        <div class="results-section">
+            <h3 data-translate="results_title">Generated Risk Management Plan</h3>
+            <div class="final-plan">
+                {{ final_plan | safe }}
+            </div>
+            <h4 data-translate="history_title">Planning History</h4>
+            <ul class="history-list">
+                {% for entry in history %}
+                <li>{{ entry }}</li>
+                {% endfor %}
+            </ul>
+            <a href="/risk_strategist" class="cta-button" style="margin-top: 20px;">Generate New Plan</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Existing scripts from base.html can be inherited
+    document.addEventListener('DOMContentLoaded', () => {
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            hero.style.backgroundPositionY = '0px';
+            window.scrollTo(0, 0);
+        }
+    });
+
+    window.addEventListener('scroll', () => {
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            const scrollPosition = window.pageYOffset;
+            hero.style.backgroundPositionY = `${scrollPosition * 0.3}px`;
+        }
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = 'fadeInUp 1s ease-out forwards';
+            }
+        });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.form-container, .results-section, .section h2, .section p').forEach(el => {
+        observer.observe(el);
+    });
+</script>
+{% endblock %}
