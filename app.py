@@ -5,6 +5,9 @@ from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from mem0 import MemoryClient
 import logging
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -16,7 +19,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Load API keys
-gemini_api_key = os.getenv('GEMINI_API_KEY')
+gemini_api_key = os.getenv('GEMINI_API_KEY_S')
 mem0_api_key = os.getenv('MEM0_API_KEY')
 
 if not all([gemini_api_key, mem0_api_key]):
@@ -99,20 +102,19 @@ def student_assistant_post():
         prompt_template = PromptTemplate(
             input_variables=["query", "language_name"],
             template=""" 
-            You are a friendly AI student guidance assistant for Indian students. Provide a clear and concise answer to the following question related to scholarships, courses, or educational opportunities. The answer must be in {language_name} and tailored to the Indian context (e.g., referencing Indian scholarships, courses, or local educational institutions). Limit the response to 3-5 sentences for brevity. Use simple language suitable for students and avoid complex jargon. If the question is too vague or unrelated to student guidance, return a polite message indicating the need for a more specific question.
+            You are a helpful Assistant for educators in Indian higher education institutions. Provide clear, actionable advice on student engagement, risk prediction, and interventions based on academic data (e.g., attendance, marks, socio-economic factors). Tailor responses to the Indian college context, referencing tools like the National Scholarship Portal or counseling best practices. Limit to 3-5 sentences. Use simple language for faculty/admins. If unrelated, politely redirect to prediction insights.
 
-            Question: {query}
+            Query: {query}
 
             Instructions:
-            - Answer in {language_name}, using simple and clear language.
-            - Focus on practical advice or information relevant to scholarships, courses, or educational opportunities in India.
-            - If unsure, suggest consulting a local school counselor or education department.
-            - Do not include markdown, code fences, or additional text—only the plain text response.
-            - Do not use any special symbols like *
-            - If user is greeting, then you also greet
+            - Respond in {language_name}.
+            - Suggest data-driven interventions (e.g., 'For a high-risk student with low attendance, schedule a mentoring session and flag for financial aid check').
+            - Reference ML outputs like risk scores or feature impacts if relevant.
+            - End with next steps, like 'Check the Student Detail View for more insights'.
+            - No markdown, code, or symbols—plain text only.
+            - Greet if starting a conversation.
 
-            Example (for English):
-            For scholarships, check the National Scholarship Portal or state education department. Apply online with your marksheets and income certificate. Many schemes like PM-USP for girls or Post-Matric for SC/ST students offer full support. Visit your local block education office for application help.
+            Example (English): Based on the 65% disengagement risk from low internal marks and attendance, recommend a personalized study plan and connect them to peer mentoring. Use the Simulation Panel to test intervention outcomes. Monitor progress via weekly check-ins to prevent dropout.
             """
         )
 
