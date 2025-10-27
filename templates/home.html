@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+
+{% block title %}JñānaMitra.ai - Empowering Student Success{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        height: 100vh;
+        background: url('https://images.pexels.com/photos/3280130/pexels-photo-3280130.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2') no-repeat center center/cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(180deg, rgba(30, 42, 68, 0.5), rgba(30, 42, 68, 0.7));
+    }
+
+    .hero-content {
+        position: relative;
+        max-width: 900px;
+        padding: 20px;
+        animation: fadeInUp 1.2s ease-out;
+    }
+
+    .hero-content h1 {
+        font-size: 58px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        color: var(--accent-color);
+        text-shadow: 0 0 10px rgba(244, 162, 97, 0.5);
+    }
+
+    .hero-content p {
+        font-size: 20px;
+        line-height: 1.6;
+        margin-bottom: 40px;
+        color: var(--light-color);
+    }
+
+    .cta-button {
+        background: linear-gradient(45deg, var(--accent-color), #e38944);
+        color: var(--dark-color);
+        padding: 15px 40px;
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 700;
+        border-radius: 50px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 15px rgba(244, 162, 97, 0.4);
+    }
+
+    .cta-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(244, 162, 97, 0.6);
+        color: var(--dark-color);
+    }
+
+    .section {
+        padding: 80px 0;
+        text-align: center;
+        background: var(--light-color);
+    }
+
+    .section h2 {
+        font-size: 38px;
+        margin-bottom: 20px;
+        color: var(--dark-color);
+        text-transform: uppercase;
+    }
+
+    .section p {
+        font-size: 18px;
+        line-height: 1.6;
+        max-width: 700px;
+        margin: 0 auto 40px;
+        color: #3c4a6b;
+    }
+
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        padding: 0 20px;
+    }
+
+    .feature-card {
+        background: #fff;
+        padding: 30px;
+        border-radius: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid var(--accent-color);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent-color), #e38944);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-card h3 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: var(--dark-color);
+    }
+
+    .feature-card p {
+        font-size: 16px;
+        color: #3c4a6b;
+    }
+
+    .feature-card i {
+        font-size: 30px;
+        color: var(--accent-color);
+        margin-bottom: 15px;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-content h1 {
+            font-size: 40px;
+            letter-spacing: 2px;
+        }
+
+        .hero-content p {
+            font-size: 16px;
+        }
+
+        .section h2 {
+            font-size: 32px;
+        }
+
+        .feature-card {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="hero-content">
+        <h1 data-translate="hero_title">Empowering Student Success</h1>
+        <p data-translate="hero_description">JñānaMitra.ai uses AI-driven predictive analytics to identify at-risk students early, enabling timely interventions and personalized support to reduce disengagement.</p>
+        <a href="/dashboard" class="cta-button" data-translate="hero_cta">Explore Dashboard</a>
+    </div>
+</div>
+
+<div class="section">
+    <div class="container">
+        <h2 data-translate="solutions_title">Our Solutions</h2>
+        <p data-translate="solutions_description">Empowering institutions with tools to monitor, predict, and prevent student disengagement for better academic outcomes.</p>
+        <div class="features">
+            <div class="feature-card">
+                <i class="fas fa-chart-line"></i>
+                <h3 data-translate="feature_dashboard_title">Interactive Dashboard</h3>
+                <p data-translate="feature_dashboard_description">Visualize KPIs, risk scores, and analytics for proactive student monitoring.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-users"></i>
+                <h3 data-translate="feature_students_title">Student Analytics</h3>
+                <p data-translate="feature_students_description">View detailed risk profiles and feature impacts for individual students.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-brain"></i>
+                <h3 data-translate="feature_chatbot_title">AI Chatbot</h3>
+                <p data-translate="feature_chatbot_description">Get personalized intervention suggestions and navigate the platform with ease.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="container">
+        <h2 data-translate="why_jnana_mitra_title">Why JñānaMitra.ai?</h2>
+        <p data-translate="why_jnana_mitra_description">Our platform combines advanced AI with user-friendly design to support institutions in fostering student success globally.</p>
+        <a href="/about" class="cta-button" data-translate="why_jnana_mitra_cta">Learn More</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            hero.style.backgroundPositionY = '0px';
+            window.scrollTo(0, 0);
+        }
+    });
+
+    window.addEventListener('scroll', () => {
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            const scrollPosition = window.pageYOffset;
+            hero.style.backgroundPositionY = `${scrollPosition * 0.3}px`;
+        }
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = 'fadeInUp 1s ease-out forwards';
+            }
+        });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.feature-card, .section h2, .section p').forEach(el => {
+        observer.observe(el);
+    });
+</script>
+{% endblock %}
