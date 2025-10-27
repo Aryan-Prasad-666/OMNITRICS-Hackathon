@@ -116,38 +116,3 @@ with st.expander("Adjust Features"):
     
     sim_risk = model.predict_proba(sim_encoded)[:, 1][0]
     st.metric("Simulated Risk", f"{sim_risk:.3f}", delta=f"Δ{risk - sim_risk:+.3f}")
-
-# Batch Upload (Bonus: Improved alignment)
-uploaded = st.file_uploader("Upload CSV (must match schema)")
-if uploaded:
-    try:
-        batch_df = pd.read_csv(uploaded)
-        # Basic cleaning (expand as needed)
-        batch_df['scholarship'] = batch_df['scholarship'].map({'Y':1, 'y':1, 'Yes':1, 'yes':1, 'N':0, 'n':0, 'No':0, 'no':0, 'Nope':0}).fillna(0)
-        batch_df['extra_curricular'] = batch_df['extra_curricular'].map({'Y':1, 'y':1, 'Yes':1, 'yes':1, 'N':0, 'n':0, 'No':0, 'no':0}).fillna(0)
-        batch_df['sports_participation'] = batch_df['sports_participation'].map({'Y':1, 'y':1, 'Yes':1, 'yes':1, 'N':0, 'n':0, 'No':0, 'no':0}).fillna(0)
-        
-        # Encode
-        batch_encoded_cats = encoder.transform(batch_df[cat_cols])
-        batch_encoded_cats_df = pd.DataFrame(batch_encoded_cats, columns=encoder.get_feature_names_out(cat_cols))
-        batch_numeric = batch_df.drop(cat_cols + ['student_id', 'dropout'], axis=1, errors='ignore')
-        batch_encoded = pd.concat([batch_numeric.reset_index(drop=True), batch_encoded_cats_df.reset_index(drop=True)], axis=1)
-        # Align columns with training
-        batch_encoded = batch_encoded.reindex(columns=list(model.feature_names_in_), fill_value=0)
-        batch_df['risk_score'] = model.predict_proba(batch_encoded)[:, 1]
-        st.dataframe(batch_df[['student_id', 'risk_score']])
-    except Exception as e:
-        st.error(f"Upload Error: {e}. Ensure columns match cleaned schema.")
-
-# Intervention Suggester (Bonus Chatbot)
-st.header("Intervention Assistant")
-query = st.text_input("e.g., 'Low CGPA advice'")
-if query:
-    risk_level = "Low" if risk < 0.3 else "Medium" if risk < 0.7 else "High"
-    top_driver = "CGPA" if "cgpa" in query.lower() else "Attendance" if "attend" in query.lower() else "General"
-    if top_driver == "CGPA":
-        st.write(f"**{risk_level} Risk**: Assign peer tutoring (NPTEL resources). Goal: +0.5 GPA in 1 semester.")
-    elif top_driver == "Attendance":
-        st.write(f"**{risk_level} Risk**: Weekly check-ins + flexible online sessions. Impact: -15% risk.")
-    else:
-        st.write(f"**{risk_level} Risk ({risk:.2f})**: If >0.5, alert counselor. General: Boost activities for +10% engagement.")

@@ -1,0 +1,471 @@
+{% extends "base.html" %}
+
+{% block title %}
+JñānaMitra.ai - AI Student Assistant
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        height: 70vh;
+        background: linear-gradient(rgba(30, 42, 68, 0.8), rgba(30, 42, 68, 0.9)), url('https://source.unsplash.com/random/1200x800/?education,student,india');
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        margin-bottom: 3rem;
+    }
+
+    .hero-section .container h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--accent-color);
+        text-shadow: 0 0 10px rgba(244, 162, 97, 0.5);
+        margin-bottom: 1rem;
+    }
+
+    .hero-section .container p {
+        font-size: 1.25rem;
+        line-height: 1.6;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .chat-container {
+        max-width: 900px;
+        margin: 2rem auto 4rem;
+        padding: 2.5rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        position: relative;
+        border: 1px solid var(--accent-color);
+    }
+
+    .chat-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .chat-header h2 {
+        font-weight: 700;
+        font-size: 2rem;
+        color: var(--primary-color);
+    }
+
+    .chat-box {
+        width: 100%;
+        height: 400px;
+        overflow-y: auto;
+        padding: 1.5rem;
+        background: var(--light-color);
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e0e0e0;
+    }
+
+    .message {
+        margin-bottom: 1.2rem;
+        padding: 1rem;
+        border-radius: 10px;
+        max-width: 80%;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .user-message {
+        background: var(--accent-color);
+        color: var(--dark-color);
+        margin-left: auto;
+        text-align: right;
+    }
+
+    .bot-message {
+        background: white;
+        color: var(--dark-color);
+        margin-right: auto;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .bot-message ul {
+        padding-left: 20px;
+        margin: 0.5rem 0;
+    }
+
+    .bot-message li {
+        margin-bottom: 0.5rem;
+        list-style-type: disc;
+    }
+
+    .bot-message p {
+        margin: 0.5rem 0;
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: white;
+        border-radius: 10px;
+        padding: 0.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e0e0e0;
+    }
+
+    .form-control {
+        flex: 1;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        color: var(--dark-color);
+        font-weight: 400;
+        height: 50px;
+    }
+
+    .form-control:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 5px rgba(244, 162, 97, 0.5);
+    }
+
+    .form-control::placeholder {
+        color: #6c757d;
+    }
+
+    .btn-send {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-send:hover {
+        background: #0f172a;
+        transform: translateY(-2px);
+    }
+
+    .btn-mic {
+        background: var(--secondary-color);
+        color: var(--light-color);
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-mic:hover {
+        background: #255560;
+        transform: translateY(-2px);
+    }
+
+    .btn-mic.active {
+        background: var(--accent-color);
+        color: var(--dark-color);
+    }
+
+    .lang-select {
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        padding: 0.5rem;
+        color: var(--dark-color);
+        height: 50px;
+    }
+
+    .lang-select:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 5px rgba(244, 162, 97, 0.5);
+    }
+
+    .info-box {
+        background-color: var(--light-color);
+        border-left: 4px solid var(--accent-color);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border-radius: 0.25rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .chat-box::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .chat-box::-webkit-scrollbar-track {
+        background: #e0e0e0;
+    }
+
+    .chat-box::-webkit-scrollbar-thumb {
+        background: var(--accent-color);
+        border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            height: 50vh;
+            padding: 2rem 0;
+        }
+        .hero-section .container h1 {
+            font-size: 2rem;
+        }
+        .hero-section .container p {
+            font-size: 1rem;
+        }
+        .chat-container {
+            margin: 1rem;
+            padding: 1.5rem;
+        }
+        .chat-box {
+            height: 300px;
+        }
+        .input-group {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .form-control, .btn-mic, .btn-send, .lang-select {
+            width: 100%;
+            border-radius: 8px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container text-center">
+        <h1 data-translate="student_assistant_title">AI Student Assistant</h1>
+        <p data-translate="student_assistant_subtitle">Chat with our AI assistant to get guidance on scholarships, courses, and educational opportunities in your preferred language</p>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Info Box -->
+            <div class="info-box">
+                <h5 class="mb-2" data-translate="why_use_student_assistant">Why use our AI Student Assistant?</h5>
+                <p class="mb-0" data-translate="student_assistant_info">Our AI Student Assistant provides clear and practical advice on scholarships, courses, and educational schemes for Indian students. Ask your questions via text or voice in English, Hindi, or Kannada.</p>
+            </div>
+
+            <!-- Chat Container -->
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h2 data-translate="student_assistant_header">AI Student Assistant</h2>
+                </div>
+                <div class="chat-box" id="chat-box">
+                    {% for message in messages %}
+                        {% if message.role == 'user' %}
+                            <div class="message user-message">{{ message.content }}</div>
+                        {% else %}
+                            <div class="message bot-message">{{ message.content | safe }}</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="input-group">
+                    <button class="btn btn-mic" id="mic-btn"><i class="fas fa-microphone"></i></button>
+                    <input type="text" id="user-input" class="form-control" data-translate="placeholder" placeholder="Ask about scholarships, courses, or educational schemes...">
+                    <button class="btn btn-send" id="send-btn"><i class="fas fa-paper-plane"></i></button>
+                    <select class="lang-select" id="lang-select">
+                        <option value="en-US" data-header="AI Student Assistant" data-placeholder="Ask about scholarships, courses, or educational schemes...">English</option>
+                        <option value="hi-IN" data-header="एआई छात्र सहायक" data-placeholder="छात्रवृत्ति, पाठ्यक्रम, या शैक्षिक योजनाओं के बारे में पूछें...">Hindi</option>
+                        <option value="kn-IN" data-header="ಎಐ ವಿದ್ಯಾರ್ಥಿ ಸಹಾಯಕ" data-placeholder="ಸ್ಕಾಲರ್‌ಶಿಪ್‌ಗಳು, ಕೋರ್ಸ್‌ಗಳು ಅಥವಾ ಶೈಕ್ಷಣಿಕ ಯೋಜನೆಗಳ ಬಗ್ಗೆ ಕೇಳಿ...">Kannada</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Extend existing translations for AI Student Assistant UI
+    translations.en = {
+        ...translations.en || {},
+        student_assistant_title: "AI Student Assistant",
+        student_assistant_subtitle: "Chat with our AI assistant to get guidance on scholarships, courses, and educational opportunities in your preferred language",
+        why_use_student_assistant: "Why use our AI Student Assistant?",
+        student_assistant_info: "Our AI Student Assistant provides clear and practical advice on scholarships, courses, and educational schemes for Indian students. Ask your questions via text or voice in English, Hindi, or Kannada.",
+        student_assistant_header: "AI Student Assistant",
+        placeholder: "Ask about scholarships, courses, or educational schemes...",
+        voice_not_supported: "Voice input is not supported in this browser.",
+        voice_error: "Error with voice input. Please try again.",
+        error_api: "Error: Failed to get response from the server."
+    };
+    translations.hi = {
+        ...translations.hi || {},
+        student_assistant_title: "एआई छात्र सहायक",
+        student_assistant_subtitle: "हमारे एआई सहायक के साथ चैट करें और अपनी पसंदीदा भाषा में छात्रवृत्ति, पाठ्यक्रम, और शैक्षिक अवसरों पर मार्गदर्शन प्राप्त करें",
+        why_use_student_assistant: "हमारा एआई छात्र सहायक क्यों उपयोग करें?",
+        student_assistant_info: "हमारा एआई छात्र सहायक भारतीय छात्रों के लिए छात्रवृत्ति, पाठ्यक्रम, और शैक्षिक योजनाओं पर स्पष्ट और व्यावहारिक सलाह प्रदान करता है। अंग्रेजी, हिंदी, या कन्नड़ में अपने प्रश्न टेक्स्ट या वॉयस के माध्यम से पूछें।",
+        student_assistant_header: "एआई छात्र सहायक",
+        placeholder: "छात्रवृत्ति, पाठ्यक्रम, या शैक्षिक योजनाओं के बारे में पूछें...",
+        voice_not_supported: "इस ब्राउज़र में वॉयस इनपुट समर्थित नहीं है।",
+        voice_error: "वॉयस इनपुट में त्रुटि। कृपया पुनः प्रयास करें।",
+        error_api: "त्रुटि: सर्वर से प्रतिक्रिया प्राप्त करने में विफल।"
+    };
+    translations.kn = {
+        ...translations.kn || {},
+        student_assistant_title: "ಎಐ ವಿದ್ಯಾರ್ಥಿ ಸಹಾಯಕ",
+        student_assistant_subtitle: "ನಮ್ಮ ಎಐ ಸಹಾಯಕರೊಂದಿಗೆ ಚಾಟ್ ಮಾಡಿ ಮತ್ತು ನಿಮ್ಮ ಆದಾಯತೆಯ ಭಾಷೆಯಲ್ಲಿ ಸ್ಕಾಲರ್‌ಶಿಪ್‌ಗಳು, ಕೋರ್ಸ್‌ಗಳು ಮತ್ತು ಶೈಕ್ಷಣಿಕ ಅವಕಾಶಗಳ ಬಗ್ಗೆ ಮಾರ್ಗದರ್ಶನ ಪಡೆಯಿರಿ",
+        why_use_student_assistant: "ನಮ್ಮ ಎಐ ವಿದ್ಯಾರ್ಥಿ ಸಹಾಯಕವನ್ನು ಏಕೆ ಬಳಸಬೇಕು?",
+        student_assistant_info: "ನಮ್ಮ ಎಐ ವಿದ್ಯಾರ್ಥಿ ಸಹಾಯಕವು ಭಾರತೀಯ ವಿದ್ಯಾರ್ಥಿಗಳಿಗಾಗಿ ಸ್ಕಾಲರ್‌ಶಿಪ್‌ಗಳು, ಕೋರ್ಸ್‌ಗಳು ಮತ್ತು ಶೈಕ್ಷಣಿಕ ಯೋಜನೆಗಳ ಬಗ್ಗೆ ಸ್ಪಷ್ಟ ಮತ್ತು ಪ್ರಾಯೋಗಿಕ ಸಲಹೆಯನ್ನು ಒದಗಿಸುತ್ತದೆ। ಇಂಗ್ಲಿಷ್, ಹಿಂದಿ, ಅಥವಾ ಕನ್ನಡದಲ್ಲಿ ನಿಮ್ಮ ಪ್ರಶ್ನೆಗಳನ್ನು ಟೆಕ್ಸ್ಟ್ ಅಥವಾ ಧ್ವನಿಯ ಮೂಲಕ ಕೇಳಿ।",
+        student_assistant_header: "ಎಐ ವಿದ್ಯಾರ್ಥಿ ಸಹಾಯಕ",
+        placeholder: "ಸ್ಕಾಲರ್‌ಶಿಪ್‌ಗಳು, ಕೋರ್ಸ್‌ಗಳು, ಅಥವಾ ಶೈಕ್ಷಣಿಕ ಯೋಜನೆಗಳ ಬಗ್ಗೆ ಕೇಳಿ...",
+        voice_not_supported: "ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಧ್ವನಿ ಒಳಸೇರಿಕೆಯನ್ನು ಬೆಂಬಲಿಸಲಾಗುವುದಿಲ್ಲ।",
+        voice_error: "ಧ್ವನಿ ಒಳಗೊಳ್ಳುವಿಕೆಯಲ್ಲಿ ದೋಷ। ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ।",
+        error_api: "ದೋಷ: ಸರ್ವರ್‌ನಿಂದ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಪಡೆಯಲು ವಿಫಲವಾಗಿದೆ।"
+    };
+
+    // Chatbot functionality
+    document.addEventListener('DOMContentLoaded', () => {
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const micBtn = document.getElementById('mic-btn');
+        const langSelect = document.getElementById('lang-select');
+        const chatHeader = document.querySelector('.chat-header h2');
+        const currentLanguage = getCurrentLanguage() || 'en';
+        updateContent(currentLanguage);
+
+        // Scroll to bottom of chat box
+        function scrollToBottom() {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Format bot response into HTML
+        function formatBotResponse(content) {
+            const lines = content.split('\n').filter(line => line.trim() !== '');
+            let htmlContent = '';
+            let inList = false;
+
+            lines.forEach(line => {
+                line = line.trim();
+                if (line.match(/^\s*[\*\-+\•]\s/)) {
+                    if (!inList) {
+                        htmlContent += '<ul>';
+                        inList = true;
+                    }
+                    const listItem = line.replace(/^\s*[\*\-+\•]\s/, '');
+                    htmlContent += `<li>${listItem}</li>`;
+                } else {
+                    if (inList) {
+                        htmlContent += '</ul>';
+                        inList = false;
+                    }
+                    htmlContent += `<p>${line}</p>`;
+                }
+            });
+
+            if (inList) {
+                htmlContent += '</ul>';
+            }
+
+            return htmlContent;
+        }
+
+        // Add message to chat box
+        function addMessage(content, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            messageDiv.innerHTML = isUser ? content : formatBotResponse(content);
+            chatBox.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Update UI elements based on selected language
+        function updateUIForLanguage() {
+            const selectedOption = langSelect.options[langSelect.selectedIndex];
+            chatHeader.textContent = selectedOption.getAttribute('data-header');
+            userInput.placeholder = selectedOption.getAttribute('data-placeholder');
+            updateContent(langSelect.value.split('-')[0]);
+        }
+
+        // Handle send message
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, true);
+            userInput.value = '';
+
+            try {
+                const response = await fetch('/student_assistant', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userInput: message,
+                        language: langSelect.value.split('-')[0]
+                    })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    addMessage(data.response, false);
+                } else {
+                    addMessage(translations[currentLanguage]?.error_api || 'Error: ' + (data.error || 'Something went wrong'), false);
+                }
+            } catch (error) {
+                addMessage(translations[currentLanguage]?.error_api || 'Error: Failed to connect to the server', false);
+            }
+        }
+
+        // Voice Input Functionality
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.lang = langSelect.value;
+            langSelect.addEventListener('change', () => {
+                recognition.lang = langSelect.value;
+                updateUIForLanguage();
+            });
+
+            recognition.onstart = () => {
+                micBtn.classList.add('active');
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                userInput.value = transcript;
+                micBtn.classList.remove('active');
+            };
+
+            recognition.onend = () => {
+                micBtn.classList.remove('active');
+            };
+
+            recognition.onerror = (event) => {
+                addMessage(translations[currentLanguage]?.voice_error || 'Error with voice input: ' + event.error, false);
+                micBtn.classList.remove('active');
+            };
+
+            micBtn.addEventListener('click', () => {
+                if (!micBtn.classList.contains('active')) {
+                    recognition.start();
+                } else {
+                    recognition.stop();
+                }
+            });
+        } else {
+            micBtn.disabled = true;
+            micBtn.title = translations[currentLanguage]?.voice_not_supported || 'Voice input is not supported in this browser.';
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        updateUIForLanguage();
+        scrollToBottom();
+    });
+</script>
+{% endblock %}
