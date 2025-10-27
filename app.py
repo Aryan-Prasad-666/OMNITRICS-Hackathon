@@ -184,7 +184,7 @@ def create_risk_management_workflow(risk_report: str, intervention_horizon: str,
 
         current_state['retention_data'] = retention_data
         current_state['data_summary'] = data_summary
-        current_state['history'] = current_state['history'] + [f"Data collection: {data_summary[:50]}..."]
+        current_state['history'] = current_state['history'] + [f"Data collection: {data_summary}"]
 
         return current_state
 
@@ -213,7 +213,7 @@ def create_risk_management_workflow(risk_report: str, intervention_horizon: str,
             assessment = "Fallback assessment: Risks are moderate; focus on engagement."
 
         current_state['risk_assessment'] = assessment
-        current_state['history'] = current_state['history'] + [f"Assessment: {assessment[:50]}..."]
+        current_state['history'] = current_state['history'] + [f"Assessment: {assessment}"]
 
         return current_state
 
@@ -245,7 +245,7 @@ def create_risk_management_workflow(risk_report: str, intervention_horizon: str,
             interventions = "Fallback interventions: Personalized academic support and peer mentoring."
 
         current_state['interventions'] = interventions
-        current_state['history'] = current_state['history'] + [f"Interventions: {interventions[:50]}..."]
+        current_state['history'] = current_state['history'] + [f"Interventions: {interventions}"]
 
         return current_state
 
@@ -279,7 +279,7 @@ def create_risk_management_workflow(risk_report: str, intervention_horizon: str,
             strategy = "Fallback strategy: Roll out interventions with faculty oversight."
 
         current_state['strategy'] = strategy
-        current_state['history'] = current_state['history'] + [f"Strategy: {strategy[:50]}..."]
+        current_state['history'] = current_state['history'] + [f"Strategy: {strategy}"]
         current_state['iteration'] = current_state.get('iteration', 0) + 1
 
         return current_state
